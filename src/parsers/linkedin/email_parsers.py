@@ -66,6 +66,8 @@ def parse_applied_info(plain_text_body: str) -> dict:
     """
     job_title, company_name, location = "", "", ""
     lines = plain_text_body.splitlines()
+    
+    # Method 1: Standard LinkedIn format
     try:
         start_index = next(i for i, line in enumerate(lines) if "Your application was sent to" in line)
         relevant_lines = [line.strip() for line in lines[start_index + 1:] if line.strip()]
@@ -73,11 +75,40 @@ def parse_applied_info(plain_text_body: str) -> dict:
             job_title, company_name, location = relevant_lines[0], relevant_lines[1], relevant_lines[2]
     except (StopIteration, IndexError):
         pass
-
+    
+    # Method 2: Fallback - try to extract from anywhere in the email
     if not all([job_title, company_name, location]):
-        missing = [f for f, v in [("Job Title", job_title), ("Company Name", company_name), ("Location", location)] if not v]
-        raise ValueError(f"Could not parse required fields. Missing: {', '.join(missing)}")
-        
+        # Try to find company name in subject or body
+        for line in lines:
+            if "Thank You For Your Interest in" in line:
+                company_match = re.search(r"Thank You For Your Interest in (.+?)!", line)
+                if company_match:
+                    company_name = company_match.group(1).strip()
+                    job_title = "Position at " + company_name  # Generic title
+                    location = "Not specified"  # Generic location
+                    break
+    
+    # Method 3: Last resort - extract any meaningful info
+    if not all([job_title, company_name, location]):
+        # Look for patterns that might indicate job info
+        for line in lines:
+            line = line.strip()
+            if line and len(line) > 5 and not line.startswith(('http', 'www', 'mailto')):
+                if not company_name and any(word in line.lower() for word in ['company', 'corp', 'inc', 'ltd', 'llc']):
+                    company_name = line
+                elif not job_title and any(word in line.lower() for word in ['position', 'role', 'job', 'engineer', 'manager', 'analyst']):
+                    job_title = line
+                elif not location and any(word in line.lower() for word in ['city', 'state', 'country', 'remote', 'office']):
+                    location = line
+
+    # If still missing, use generic values
+    if not job_title:
+        job_title = "Position not specified"
+    if not company_name:
+        company_name = "Company not specified"
+    if not location:
+        location = "Location not specified"
+
     return {"Job Title": job_title, "Company Name": company_name, "Location": location}
 
 def parse_viewed_rejected_info(html_content: str, subject: str) -> dict:

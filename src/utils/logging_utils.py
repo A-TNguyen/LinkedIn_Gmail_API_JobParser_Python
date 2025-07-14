@@ -2,7 +2,7 @@ import sys
 import os
 from datetime import datetime
 
-def setup_logging(log_file_path="logs/parser_run.log"):
+def setup_logging(log_file_path="data/logs/parser_run.log"):
     """
     Sets up logging to redirect stdout to both the console and a log file.
 

@@ -1,10 +1,11 @@
 import base64
 import email
 from email import policy
-from typing import List, Dict
+from email.message import EmailMessage
+from typing import List, Dict, Optional
 from googleapiclient.errors import HttpError
 
-def get_label_id(service, label_name: str) -> str:
+def get_label_id(service, label_name: str) -> Optional[str]:
     """
     Retrieves the Gmail Label ID for a given human-readable label name.
 
@@ -26,13 +27,14 @@ def get_label_id(service, label_name: str) -> str:
         print(f"Error getting label ID for {label_name}: {e}")
         return None
 
-def fetch_messages(service, label_name: str) -> List[Dict]:
+def fetch_messages(service, label_name: str, date_query: str = "") -> List[Dict]:
     """
     Fetches all message IDs from Gmail for a specific label, handling pagination.
 
     Args:
         service: The authenticated Gmail API service object.
         label_name: The name of the Gmail label to fetch emails from.
+        date_query: Optional Gmail search query for date filtering (e.g., "after:2024/01/01")
 
     Returns:
         A list of message dictionaries, each containing an 'id'.
@@ -44,26 +46,33 @@ def fetch_messages(service, label_name: str) -> List[Dict]:
             print(f"Label '{label_name}' not found.")
             return messages
 
-        response = service.users().messages().list(
-            userId='me', 
-            labelIds=[label_id], 
-            maxResults=500
-        ).execute()
+        # Build search query combining label and date filter
+        search_params = {
+            'userId': 'me',
+            'labelIds': [label_id],
+            'maxResults': 500
+        }
+        
+        # Add date query if provided
+        if date_query:
+            search_params['q'] = date_query
+            print(f"Searching {label_name} with date filter: {date_query}")
+
+        response = service.users().messages().list(**search_params).execute()
         
         total_messages = response.get('resultSizeEstimate', 0)
-        print(f"Found approximately {total_messages} messages in {label_name}")
+        if date_query:
+            print(f"Found approximately {total_messages} messages in {label_name} (filtered)")
+        else:
+            print(f"Found approximately {total_messages} messages in {label_name}")
         
         messages.extend(response.get('messages', []))
         
         while 'nextPageToken' in response:
             page_token = response['nextPageToken']
             print(f"Fetching next page for {label_name}...")
-            response = service.users().messages().list(
-                userId='me', 
-                labelIds=[label_id], 
-                pageToken=page_token,
-                maxResults=500
-            ).execute()
+            search_params['pageToken'] = page_token
+            response = service.users().messages().list(**search_params).execute()
             messages.extend(response.get('messages', []))
             
     except Exception as e:
@@ -72,7 +81,7 @@ def fetch_messages(service, label_name: str) -> List[Dict]:
     print(f"✅ Successfully retrieved {len(messages)} messages from {label_name}")
     return messages
 
-def get_full_message(service, msg_id: str) -> email.message.Message:
+def get_full_message(service, msg_id: str) -> Optional[EmailMessage]:
     """
     Retrieves a single, complete email message by its ID.
     

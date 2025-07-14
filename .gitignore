@@ -24,6 +24,7 @@ wheels/
 venv/
 env/
 ENV/
+.venv/
 
 # IDE
 .idea/
@@ -31,17 +32,11 @@ ENV/
 *.swp
 *.swo
 
-# Project specific
-config/
-archive/
+# Project specific data and logs
 *.log
 *.csv
 *.xlsx
-logs/
 data/
-src/logs/
-src/data/
-src/data/processed/archive/
 
 # Sensitive files
 credentials.json
@@ -50,10 +45,16 @@ token.json
 *.key
 .env
 .env.*
-env.example
-!env.example
-job_application_logs.txt
-**/config.json
+client_secret*.json
+oauth_credentials.json
+service_account.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
 
 # Windows
 Thumbs.db

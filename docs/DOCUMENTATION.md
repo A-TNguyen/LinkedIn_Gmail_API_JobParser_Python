@@ -259,6 +259,64 @@ logs/job_application_logs.txt
    ls -l data/processed/
    ```
 
+## Usage
+
+### Basic Usage
+
+To run the parser:
+
+```bash
+python src/main.py
+```
+
+The script will:
+1. Authenticate with Gmail
+2. Fetch emails from the configured labels
+3. Parse job application information
+4. Save results to CSV file
+5. Archive previous results
+
+### Date Range Filtering
+
+You can filter emails by date range to process only recent emails:
+
+```bash
+# Process emails from the last 24 hours
+python src/main.py --date-range 24h
+
+# Process emails from the last week
+python src/main.py --date-range 7d
+
+# Process emails from the last month
+python src/main.py --date-range 30d
+
+# Process emails from a custom date range
+python src/main.py --date-range 2024-01-01:2024-12-31
+
+# List all available date range options
+python src/main.py --list-ranges
+```
+
+**Date Range Options:**
+- `all` - All emails (default)
+- `24h`, `1d` - Last 24 hours
+- `7d`, `1w` - Last 7 days
+- `30d`, `1m` - Last 30 days
+- `90d`, `3m` - Last 90 days
+- `1y` - Last year
+- `YYYY-MM-DD:YYYY-MM-DD` - Custom date range
+
+### Command Line Options
+
+```bash
+python src/main.py [OPTIONS]
+
+Options:
+  -d, --date-range TEXT   Date range to process (default: all)
+  -l, --list-ranges      List available date ranges and exit
+  -h, --help             Show help message and exit
+```
+
 ## Development Guidelines
 
 1. **Code Style**

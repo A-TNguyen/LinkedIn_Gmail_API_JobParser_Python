@@ -1,0 +1,20 @@
+[
+    {
+        "label_name": "LinkedIn/Applied",
+        "status": "Applied",
+        "priority": 1,
+        "parser_type": "applied"
+    },
+    {
+        "label_name": "LinkedIn/Viewed",
+        "status": "Viewed",
+        "priority": 2,
+        "parser_type": "viewed_rejected"
+    },
+    {
+        "label_name": "LinkedIn/Rejected",
+        "status": "Rejected",
+        "priority": 3,
+        "parser_type": "viewed_rejected"
+    }
+]

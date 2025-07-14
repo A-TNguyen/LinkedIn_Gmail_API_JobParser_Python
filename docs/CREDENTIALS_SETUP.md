@@ -60,21 +60,42 @@ When you run the application for the first time:
 
 ## Security Best Practices
 
-1. **Never commit sensitive files:**
-   - `.env`
-   - `credentials.json`
-   - `token.json`
-   - Any other files containing API keys or secrets
+### Protected Files
 
-2. **Regular maintenance:**
-   - Rotate your credentials periodically
-   - Revoke access for unused applications
-   - Keep your Google Cloud Console secure
+The `.gitignore` file is configured to automatically exclude these sensitive files:
 
-3. **Local development:**
-   - Use different credentials for development and production
-   - Keep your `.env` file in a secure location
-   - Don't share your credentials with others
+**Authentication & Configuration:**
+- `.env` - Environment variables
+- `credentials.json` - Google API credentials  
+- `token.json` - OAuth access tokens
+- `client_secret*.json` - Downloaded OAuth files
+- `config/` - Entire configuration directory
+
+**Generated Data & Logs:**
+- `*.log` - All log files
+- `*.csv` - CSV output files (may contain personal data)
+- `*.xlsx` - Excel output files
+- `src/logs/` - Application logs directory
+- `src/data/` - All data directories
+
+### Security Guidelines
+
+1. **Credential Management:**
+   - Store credentials only in the `config/` directory
+   - Never commit or share credential files
+   - Use environment variables when possible
+   - Rotate credentials regularly
+
+2. **File Permissions:**
+   - Set restrictive permissions on sensitive files (600 on Unix)
+   - Keep credential files in secure locations
+   - Regularly audit file access
+
+3. **Development Practices:**
+   - Use separate credentials for development/production
+   - Never hardcode credentials in source code
+   - Review `.gitignore` before committing changes
+   - Use secure backup methods for credential files
 
 ## Troubleshooting
 
