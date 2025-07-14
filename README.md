@@ -2,6 +2,9 @@
 
 A Python application that automatically tracks your LinkedIn job application statuses by parsing Gmail notifications. This tool helps you maintain a clear overview of your job search progress by organizing application statuses (Applied, Viewed, Rejected) into an Excel spreadsheet.
 
+<img width="900" height="1013" alt="image" src="https://github.com/user-attachments/assets/6091c53a-b2ab-4da9-9dca-1eb042df55a2" />
+
+
 ## Features
 
 - 🔄 Automatic Gmail API integration
